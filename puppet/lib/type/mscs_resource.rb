@@ -18,10 +18,10 @@ Puppet::Type.newtype(:mscs_resource) do
     desc "The resource type to be managed by the cluster"
     newvalues (:ipaddress, :networkname, :fileshare, :genericservice, :physicaldisk, :genericapplication)
     aliasvalue :ip, :ipaddress
-    aliasvalue: nn, :networkname
-    aliasvalue: fs, :fileshare
+    aliasvalue :nn, :networkname
+    aliasvalue :fs, :fileshare
     aliasvalue :gensvc, :genericservice
-    aliasvalue: pd, :physicaldisk
+    aliasvalue :pd, :physicaldisk
     aliasvalue :genapp, :genericapplication
   end
 
