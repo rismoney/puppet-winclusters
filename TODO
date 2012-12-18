@@ -1,0 +1,14 @@
+*
+Disclaimer - this does not work yet.
+
+I will make a release when I feel like things are coming together.
+
+I am only releasing this on github, b/c people are interested in the
+code dispite the fact that it does not quite work yet.
+
+*
+key items
+need to complete ruby-mscs gem
+need rspec coverage
+need to build out provider
+
