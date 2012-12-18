@@ -2,6 +2,7 @@ puppet-winclusters
 ==================
 
 puppet windows cluster module
+NOTE THIS IS NON-FUNCTIONAL
 
 Initial notes:
 * facter facts needed:
