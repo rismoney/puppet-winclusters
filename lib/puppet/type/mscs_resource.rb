@@ -17,13 +17,13 @@ Puppet::Type.newtype(:mscs_resource) do
 
   newparam(:restype, :parent => Puppet::MscsProperty) do
     desc "The resource type to be managed by the cluster"
-    #newvalues(:ipaddress, :networkname, :fileshare, :genericservice, :physicaldisk, :genericapplication)
-    #aliasvalue :ip, :ipaddress
-    #aliasvalue :nn, :networkname
-    #aliasvalue :fs, :fileshare
-    #aliasvalue :gensvc, :genericservice
-    #aliasvalue :pd, :physicaldisk
-    #aliasvalue :genapp, :genericapplication
+    newvalues(:ipaddress, :networkname, :fileshare, :genericservice, :physicaldisk, :genericapplication)
+    aliasvalue :ip, :ipaddress
+    aliasvalue :nn, :networkname
+    aliasvalue :fs, :fileshare
+    aliasvalue :gensvc, :genericservice
+    aliasvalue :pd, :physicaldisk
+    aliasvalue :genapp, :genericapplication
   end
 
   # ip address params
@@ -86,10 +86,11 @@ Puppet::Type.newtype(:mscs_resource) do
 
   newparam(:startupparameters, :parent => Puppet::MscsProperty) do
     desc "The startup parameters to be be assigned to generic service resource"
-  # raise Puppet::Error, "Invalid value for attribute '#{name}', must use back slashes instead of forward slashes" if self.should_to_s(value).include?('/')
+    validate do |value|
+      raise Puppet::Error, "Invalid value for attribute '#{name}', must use back slashes instead of forward slashes" if self.should_to_s(value).include?('/')
+    end
   end
   
-
 
   # physical disk parameters
   
@@ -118,8 +119,10 @@ Puppet::Type.newtype(:mscs_resource) do
 
   newparam(:currentdirectory, :parent => Puppet::MscsProperty) do
     desc "The Currentdirectory to be be assigned to generic app resource"
-    #raise Puppet::Error.new('Must be specified using an absolute path.') unless absolute_path?(value)
-    #raise Puppet::Error, "Invalid value for attribute '#{name}', must use back slashes instead of forward slashes" if self.should_to_s(value).include?('/')
+    validate do |value|
+      raise Puppet::Error.new('Must be specified using an absolute path.') unless absolute_path?(value)
+      raise Puppet::Error, "Invalid value for attribute '#{name}', must use back slashes instead of forward slashes" if self.should_to_s(value).include?('/')
+    end
   end
 
   newparam(:interactwithDesktop, :parent => Puppet::MscsProperty) do
