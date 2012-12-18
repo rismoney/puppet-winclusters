@@ -19,6 +19,5 @@ Initial notes:
   * if cluster all ready configured
        install cluster resources 
 
-work in progress...
-
-      
+  developing [ruby-mscs gem] (https://github.com/rismoney/ruby-mscs) in tandem : 
+  work in progress...
