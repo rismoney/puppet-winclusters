@@ -1,6 +1,6 @@
 require 'puppet'
 
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.dirname(__FILE__) + '/../../../spec_helper'
 
 describe Puppet::Type.type(:mscs_resource) do
 
@@ -10,33 +10,32 @@ describe Puppet::Type.type(:mscs_resource) do
     }.to raise_error(Puppet::Error, /Name must not be empty/)
   end
 
-  restypes = [
+  res_types = [
   'ipaddress','ip',
   'networkname','nn',
   'fileshare','fs',
   'genericservice','gensvc',
   'physicaldisk','pd',
   'genericapplication','genapp',
-  ].each do |restype|
-    context "when resource type is #{resourcetype}" do
+  ].each do |res_type|
+    context "when resource type is #{res_type}" do
   
   
       it 'should not fail if the resourcetype is not valid' do
         expect {
-          Puppet::Type.type(:mscs_resource).new(:resourcetype => restype)
+          Puppet::Type.type(:mscs_resource).new(:name => 'test', :restype => res_type)
           }.to_not raise_error
       end
     end
   end
   
-  restypes = [
+  res_types = [
   'garbage1',
   '123',
-  
-  ].each do |restype|
+  ].each do |res_type|
       it 'should fail if the resourcetype is not valid' do
         expect {
-          Puppet::Type.type(:mscs_resource).new(:resourcetype => restype)
+          Puppet::Type.type(:mscs_resource).new(:name => 'test', :restype => res_type)
           }.to raise_error
     end
   end
