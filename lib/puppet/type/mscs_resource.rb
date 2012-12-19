@@ -15,7 +15,7 @@ Puppet::Type.newtype(:mscs_resource) do
 
   end
 
-  newparam(:restype, :parent => Puppet::MscsProperty) do
+  newparam(:resourcetype, :parent => Puppet::MscsProperty) do
     desc "The resource type to be managed by the cluster"
     newvalues(:ipaddress, :networkname, :fileshare, :genericservice, :physicaldisk, :genericapplication)
     aliasvalue :ip, :ipaddress
@@ -27,7 +27,7 @@ Puppet::Type.newtype(:mscs_resource) do
   end
 
   # ip address params
-  newparam(:address, :parent => Puppet::MscsProperty) do
+  newparam(:ipaddress, :parent => Puppet::MscsProperty) do
     desc "The ip address to be be assigned to ip address resource"
   end
   
@@ -49,6 +49,12 @@ Puppet::Type.newtype(:mscs_resource) do
   
   newparam(:remappipenames, :parent => Puppet::MscsProperty) do
     desc "The network name to be be assigned to network name resource"
+    newvalues(:true, :false)
+    aliasvalue(:yes, :true)
+    aliasvalue(:y, :true)
+    aliasvalue(:n, :false)
+    aliasvalue(:no, :false)
+    defaultto :true
   end
 
   #file share params
@@ -148,23 +154,28 @@ Puppet::Type.newtype(:mscs_resource) do
 
   validate do
 
-    is_type = !self[:restype]
-
-    case is_type
-      when :ipaddress
-        has_address = !self[:address].nil?
-        has_subnetmask = !self[:subnetmask].nil?
-        self.fail "You must specify address, and subnetmask" if has_address != has_subnetmask
-      when :networkname
-        has_remappipenames = !self[:has_remappipenames].nil?
-        self.fail "You must specify address, and subnetmask" if has_remappipenames.nil
-      # TODO pending
-      #when :fileshare
-        
-      #when :genericservice
-      #when :physicaldisk
-      #when :genericapplication
-    end
+    is_type = self[:resourcetype]
+    is_ip = is_type == ('ipaddress' || 'ip')
+    is_nn = is_type == ('networkname' || 'nn')
+    is_fs = is_type == ('fileshare' || 'fs')
+    is_gensvc = is_type == ('genericservice' || 'gensvc')
+    is_pd = is_type == ('physicaldisk' || 'pd')
+    is_genapp = is_type == ('genericapplication' || 'genapp')
+    
+    has_address = !self[:ipaddress].nil?
+    has_subnetmask = !self[:subnetmask].nil?
+    has_path = !self[:path].nil?
+    has_path = !self[:signature].nil?
+    
+    raise Puppet::Error, "You must specify IP address for an IP Address Resource"  if is_ip != has_address
+    raise Puppet::Error, "You must specify Subnet Mask for an IP Address Resource"  if is_ip != has_subnetmask
+    
+    TODO:
+    
+    #raise Puppet::Error, "You must specify Path for an File Share Resource"  if is_fs != has_path
+    #raise Puppet::Error, "You must specify Signature for an Physical Disk Resource"  if is_pd != has_signature
+    
+    
 
   end
 end
