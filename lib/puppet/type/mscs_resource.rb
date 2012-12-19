@@ -15,6 +15,20 @@ Puppet::Type.newtype(:mscs_resource) do
 
   end
 
+  newparam(:clustername, :parent => Puppet::MscsProperty) do
+    desc "The name of the cluster"
+    validate do |value|
+      raise Puppet::Error, "clustername must not be empty" if value.empty?
+    end
+  end
+
+  newparam(:clustergroup, :parent => Puppet::MscsProperty) do
+    desc "The name of the cluster"
+    validate do |value|
+      raise Puppet::Error, "clustergroup must not be empty" if value.empty?
+    end
+  end
+  
   newparam(:resourcetype, :parent => Puppet::MscsProperty) do
     desc "The resource type to be managed by the cluster"
     newvalues(:ipaddress, :networkname, :fileshare, :genericservice, :physicaldisk, :genericapplication)
@@ -155,35 +169,30 @@ Puppet::Type.newtype(:mscs_resource) do
   validate do
 
     is_type = self[:resourcetype]
-    is_ip = is_type == ('ipaddress' || 'ip')
-    is_nn = is_type == ('networkname' || 'nn')
-    is_fs = is_type == ('fileshare' || 'fs')
-    is_gensvc = is_type == ('genericservice' || 'gensvc')
-    is_pd = is_type == ('physicaldisk' || 'pd')
-    is_genapp = is_type == ('genericapplication' || 'genapp')
+    is_ip = (is_type == 'ipaddress') || (is_type == 'ip')
+    is_nn = (is_type == 'networkname') || (is_type =='nn')
+    is_fs = (is_type == 'fileshare')  || (is_type =='fs')
+    is_gensvc = (is_type == 'genericservice') || (is_type == 'gensvc')
+    is_pd = (is_type == 'physicaldisk') || (is_type =='pd')
+    is_genapp = (is_type == 'genericapplication') || (is_type == 'genapp')
     
     has_address = !self[:ipaddress].nil?
     has_subnetmask = !self[:subnetmask].nil?
     has_path = !self[:path].nil?
     has_signature = !self[:signature].nil?
-    has_share = !self[:share].nil?
+
     has_currentdirectory = !self[:currentdirectory].nil?
     has_sharename = !self[:sharename].nil?
     has_commandline = !self[:commandline].nil?
     
     raise Puppet::Error, "You must specify IP address for an IP Address Resource"  if is_ip != has_address
     raise Puppet::Error, "You must specify Subnet Mask for an IP Address Resource"  if is_ip != has_subnetmask
-    
-    # TODO: [need to fix unit tests to reflect the better dependencies below]
-    
-    #raise Puppet::Error, "You must specify Path for an File Share Resource"  if is_fs != has_path
-    #raise Puppet::Error, "You must specify Sharename for an File Share Resource"  if is_fs != has_sharename
-    
-    #raise Puppet::Error, "You must specify command line for a Generic Application Resource"  if is_genapp != has_commandline
-    #raise Puppet::Error, "You must specify currentdir for a Generic Application Resource"  if is_genapp != has_currentdirectory
-    
-    #raise Puppet::Error, "You must specify Signature for an Physical Disk Resource"  if is_pd != has_signature
-    
-   
+    raise Puppet::Error, "You must specify Path for an File Share Resource"  if is_fs != has_path
+    raise Puppet::Error, "You must specify Sharename for an File Share Resource"  if is_fs != has_sharename
+    raise Puppet::Error, "You must specify command line for a Generic Application Resource"  if is_genapp != has_commandline
+    raise Puppet::Error, "You must specify currentdir for a Generic Application Resource"  if is_genapp != has_currentdirectory
+    raise Puppet::Error, "You must specify Signature for an Physical Disk Resource"  if is_pd != has_signature
+
+
   end
 end

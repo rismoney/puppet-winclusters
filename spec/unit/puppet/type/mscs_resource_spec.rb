@@ -10,19 +10,15 @@ describe Puppet::Type.type(:mscs_resource) do
     }.to raise_error(Puppet::Error, /Name must not be empty/)
   end
 
-
-
   # check to make sure all parameters can be specified
   params = [
   'network',
   'enablenetbios',
-  'sharename',
   'remark',
   'startupparameters',
-  'signature',
   'conditionalmount',
-  'commandline',
-
+  'clustername',
+  'clustergroup',
   ].each do |param|
     context "when a valid cluster parameter #{param} => is specified" do
       it "should not raise an error" do
@@ -33,6 +29,9 @@ describe Puppet::Type.type(:mscs_resource) do
     end
   end
 
+
+
+
 # check to make sure these are valid parameters (assign them a required boolean)
    params = [
   'sharedubdirs',
@@ -42,32 +41,32 @@ describe Puppet::Type.type(:mscs_resource) do
   'usenetworkname',
   ].each do |param|
     context "when a valid cluster parameter #{param} => requiring boolean is specified  #{param}" do
-      it do
+      it "should not raise an error specified as true" do
         expect {
           Puppet::Type.type(:mscs_resource).new(:name => 'test', param => true)
           }.to_not raise_error
       end
-      it "should not raise an error" do
+      it "should not raise an error specified as false" do
         expect {
           Puppet::Type.type(:mscs_resource).new(:name => 'test', param => false)
           }.to_not raise_error
       end
-      it "should not raise an error" do
+      it "should not raise an error specified as y" do
         expect {
           Puppet::Type.type(:mscs_resource).new(:name => 'test', param => 'y')
           }.to_not raise_error
       end
-      it "should not raise an error" do
+      it "should not raise an error specified as n" do
         expect {
           Puppet::Type.type(:mscs_resource).new(:name => 'test', param => 'n')
           }.to_not raise_error
       end
-      it "should not raise an error" do
+      it "should not raise an error specified as yes" do
         expect {
           Puppet::Type.type(:mscs_resource).new(:name => 'test', param => 'yes')
           }.to_not raise_error
       end
-      it "should not raise an error" do
+      it "should not raise an error specified as no" do
         expect {
           Puppet::Type.type(:mscs_resource).new(:name => 'test', param => 'no')
           }.to_not raise_error
@@ -83,30 +82,6 @@ describe Puppet::Type.type(:mscs_resource) do
     end
   end
   
-# check to make sure these are valid parameters (assign a random path)
-  params = [
-  'path',
-  'currentdirectory',
-  ].each do |param|
-    context "when param used is #{param}" do
-      it "should fail if the resourcetype #{param} is not valid" do
-        expect {
-          Puppet::Type.type(:mscs_resource).new(:name => 'test', param => 'C:\windows')
-          }.to_not raise_error
-      end
-
-# ensure the backslash is always specified - f the linux paths :)
-      badpath='C:/windows'
-      it "should fail if the resourcetype #{badpath} is not valid" do
-        expect {
-          Puppet::Type.type(:mscs_resource).new(:name => 'test', param => 'C:/windows')
-          }.to raise_error
-      end
-    end
-  end
-
-
-
 # check to make sure a bullshit params raises an error 
   params = [
   'booya',
@@ -124,10 +99,8 @@ describe Puppet::Type.type(:mscs_resource) do
   # check to make sure valid resource types are selected.
   res_types = [
   'networkname','nn',
-  'fileshare','fs',
   'genericservice','gensvc',
-  'physicaldisk','pd',
-  'genericapplication','genapp',
+
   ].each do |res_type|
     context "when resourcetype => #{res_type} is specified" do
   
@@ -161,8 +134,59 @@ describe Puppet::Type.type(:mscs_resource) do
         }.to raise_error
     end
   end
+  context "when a generic app is specified with command line and has current directory" do
+    it do
+      expect {
+        Puppet::Type.type(:mscs_resource).new(:name => 'test', :resourcetype => 'genapp', :commandline => 'blah', :currentdirectory => 'C:\windows')
+        }.to_not raise_error
+    end
+  end
+  context "when a generic app is specified with currentdirectory and missing commandline" do
+    it do
+      expect {
+        Puppet::Type.type(:mscs_resource).new(:name => 'test', :resourcetype => 'genapp', :currentdirectory => 'C:\windows')
+        }.to raise_error
+    end
+  end
+  context "when a generic app is specified with command line but missing currendir " do
+    it do
+      expect {
+        Puppet::Type.type(:mscs_resource).new(:name => 'test', :resourcetype => 'genapp', :commandline => 'blah')
+        }.to raise_error
+    end
+  end
+  context "when a physical disk is specified with missing signature" do
+    it do
+      expect {
+        Puppet::Type.type(:mscs_resource).new(:name => 'test', :resourcetype => 'pd')
+        }.to raise_error
+    end
+  end
+  context "when a physical disk is specified with signature" do
+    it do
+      expect {
+        Puppet::Type.type(:mscs_resource).new(:name => 'test', :resourcetype => 'pd', :signature => 'blah')
+        }.to_not raise_error
+    end
+  end
   
 
+  context "when a file share resource is specified with path and sharename" do
+    it do
+      expect {
+        Puppet::Type.type(:mscs_resource).new(:name => 'test', :resourcetype => 'fs', :path => 'C:\\windows', :sharename => 'blah')
+        }.to_not raise_error
+    end
+  end
+  
+   context "when a file share resource is specified without path and sharename" do
+    it do
+      expect {
+        Puppet::Type.type(:mscs_resource).new(:name => 'test', :resourcetype => 'fileshare')
+        }.to raise_error
+    end
+   end
+  
 # inverse kick out bad resource types
   res_types = [
   'booya',
