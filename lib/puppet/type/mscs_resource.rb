@@ -165,17 +165,25 @@ Puppet::Type.newtype(:mscs_resource) do
     has_address = !self[:ipaddress].nil?
     has_subnetmask = !self[:subnetmask].nil?
     has_path = !self[:path].nil?
-    has_path = !self[:signature].nil?
+    has_signature = !self[:signature].nil?
+    has_share = !self[:share].nil?
+    has_currentdirectory = !self[:currentdirectory].nil?
+    has_sharename = !self[:sharename].nil?
+    has_commandline = !self[:commandline].nil?
     
     raise Puppet::Error, "You must specify IP address for an IP Address Resource"  if is_ip != has_address
     raise Puppet::Error, "You must specify Subnet Mask for an IP Address Resource"  if is_ip != has_subnetmask
     
-    TODO:
+    # TODO: [need to fix unit tests to reflect the better dependencies below]
     
     #raise Puppet::Error, "You must specify Path for an File Share Resource"  if is_fs != has_path
+    #raise Puppet::Error, "You must specify Sharename for an File Share Resource"  if is_fs != has_sharename
+    
+    #raise Puppet::Error, "You must specify command line for a Generic Application Resource"  if is_genapp != has_commandline
+    #raise Puppet::Error, "You must specify currentdir for a Generic Application Resource"  if is_genapp != has_currentdirectory
+    
     #raise Puppet::Error, "You must specify Signature for an Physical Disk Resource"  if is_pd != has_signature
     
-    
-
+   
   end
 end

@@ -12,8 +12,6 @@ describe Puppet::Type.type(:mscs_resource) do
 
 
 
-  
-  
   # check to make sure all parameters can be specified
   params = [
   'network',
@@ -143,21 +141,21 @@ describe Puppet::Type.type(:mscs_resource) do
   end
 
   context "when a ip address resource is specified with ip address and subnetmask" do
-    it "should ipaddress, ip, sm" do
+    it do
       expect {
         Puppet::Type.type(:mscs_resource).new(:name => 'test', :resourcetype => 'ipaddress', :ipaddress => '1.1.1.1', :subnetmask => '2.2.2.2')
         }.to_not raise_error
     end
   end
   context "when a ip address resource is specified with ip address with subnetmask no ip" do
-    it " ipaddress, sm" do
+    it do
       expect {
         Puppet::Type.type(:mscs_resource).new(:name => 'test', :resourcetype => 'ipaddress', :subnetmask => '2.2.2.2')
         }.to raise_error
     end
   end
   context "when a ip address resource is specified with ip address and no subnetmask" do
-    it " ipaddress, ip" do
+    it do
       expect {
         Puppet::Type.type(:mscs_resource).new(:name => 'test', :resourcetype => 'ipaddress', :ipaddress => '1.1.1.1')
         }.to raise_error
@@ -165,8 +163,6 @@ describe Puppet::Type.type(:mscs_resource) do
   end
   
 
-  
-  
 # inverse kick out bad resource types
   res_types = [
   'booya',
