@@ -15,20 +15,6 @@ Puppet::Type.newtype(:mscs_resource) do
 
   end
 
-  newparam(:clustername, :parent => Puppet::MscsProperty) do
-    desc "The name of the cluster"
-    validate do |value|
-      raise Puppet::Error, "clustername must not be empty" if value.empty?
-    end
-  end
-
-  newparam(:clustergroup, :parent => Puppet::MscsProperty) do
-    desc "The name of the cluster"
-    validate do |value|
-      raise Puppet::Error, "clustergroup must not be empty" if value.empty?
-    end
-  end
-  
   newparam(:resourcetype, :parent => Puppet::MscsProperty) do
     desc "The resource type to be managed by the cluster"
     newvalues(:ipaddress, :networkname, :fileshare, :genericservice, :physicaldisk, :genericapplication)
@@ -40,6 +26,14 @@ Puppet::Type.newtype(:mscs_resource) do
     aliasvalue :genapp, :genericapplication
   end
 
+  newparam(:clustername, :parent => Puppet::MscsProperty) do
+    desc "The name of the cluster"
+  end
+
+  newparam(:clustergroup, :parent => Puppet::MscsProperty) do
+    desc "The group on the cluster"
+  end
+  
   # ip address params
   newparam(:ipaddress, :parent => Puppet::MscsProperty) do
     desc "The ip address to be be assigned to ip address resource"
