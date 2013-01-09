@@ -5,28 +5,35 @@ require 'C:/gitrepos/ruby-mscs/lib/mscs.rb'
 Puppet::Type.type(:mscs_resource).provide(:mscs_resource) do
   desc "Resource Provider for MSCS clusters." 
   
+  
   def create
-    # puts "#{@resource[:name]}"
-    # puts "#{@resource[:clustergroup]}"
-    # puts "#{@resource[:ipaddress]}"
-    # puts "#{@resource[:subnetmask]}"
-    # puts "#{@resource[:network]}"
-    
-    cluster_group('add',@resource[:clustergroup])
-    cluster_res('add',@resource[:name],@resource[:resourcetype],@resource[:clustergroup])
-    #cluster_res_ip_props(@resource[:name],@resource[:clustergroup],@resource[:ipaddress],@resource[:subnetmask],@resource[:network])
+ 
+    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
+    #Mscs::Group.add(cluster_handle,@resource[:clustergroup])
+    Mscs::Resource.add(cluster_handle,@resource[:name],@resource[:resourcetype],@resource[:clustergroup])
+    ipres={
+      :enabledhcp    => 0,
+      :address       => @resource[:ipaddress],
+      :subnetmask    => @resource[:subnetmask],
+      :network       => @resource[:network],
+      :enablenetbios => 0
+      }
 
-    
+
+    Mscs::Resource.set_priv(cluster_handle, @resource[:name], ipres)
+
   end
 
   def destroy
-    # kill the mofo
+    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
+    removal=Mscs::Resource.remove(cluster_handle,@resource[:name])
+    
   end
 
   def exists?
-    File.exists?('C:/hello.txt')
+    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
+    resourcequery=Mscs::Cluster.enumerate('Cluster', cluster_handle, 4)
+    resourcequery.include? @resource[:name]
   end
 
 end
-
-
