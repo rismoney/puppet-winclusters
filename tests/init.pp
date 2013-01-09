@@ -1,9 +1,10 @@
-  mscs_resource {'myresource':
-    clustername => 'cc-fs01',
+  mscs_resource {'myresourcex':
+    clustername => 'cx-fs01',
     resourcetype => 'ipaddress',
     clustergroup => 'booya',
-    ipaddress => '1.2.3.4',
-    subnetmask => '1.1.2.4',
+    ipaddress => '30.3.4.43',
+    subnetmask => '255.255.255.0',
+    network => 'C_MGMT-304',
     ensure   => present,
   }
 

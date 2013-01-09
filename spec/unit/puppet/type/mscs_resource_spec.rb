@@ -41,35 +41,19 @@ describe Puppet::Type.type(:mscs_resource) do
   'usenetworkname',
   ].each do |param|
     context "when a valid cluster parameter #{param} => requiring boolean is specified  #{param}" do
-      it "should not raise an error specified as true" do
-        expect {
-          Puppet::Type.type(:mscs_resource).new(:name => 'test', param => true)
-          }.to_not raise_error
-      end
-      it "should not raise an error specified as false" do
-        expect {
-          Puppet::Type.type(:mscs_resource).new(:name => 'test', param => false)
-          }.to_not raise_error
-      end
-      it "should not raise an error specified as y" do
-        expect {
-          Puppet::Type.type(:mscs_resource).new(:name => 'test', param => 'y')
-          }.to_not raise_error
-      end
-      it "should not raise an error specified as n" do
-        expect {
-          Puppet::Type.type(:mscs_resource).new(:name => 'test', param => 'n')
-          }.to_not raise_error
-      end
-      it "should not raise an error specified as yes" do
-        expect {
-          Puppet::Type.type(:mscs_resource).new(:name => 'test', param => 'yes')
-          }.to_not raise_error
-      end
-      it "should not raise an error specified as no" do
-        expect {
-          Puppet::Type.type(:mscs_resource).new(:name => 'test', param => 'no')
-          }.to_not raise_error
+      validbools = [
+        true,
+        false,
+        'y',
+        'n',
+        'yes',
+        'no',
+      ].each do |validbool|
+        it "should not raise an error specified as #{validbool}" do
+          expect {
+            Puppet::Type.type(:mscs_resource).new(:name => 'test', param => validbool)
+            }.to_not raise_error
+        end
       end
     end
     
