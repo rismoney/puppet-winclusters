@@ -1,5 +1,4 @@
 require 'C:/gitrepos/ruby-mscs/lib/mscs.rb'
-require 'win32ole'
 
 # fetch the mscs_type call the class provide passing it mscs_resource 
 
@@ -10,7 +9,7 @@ Puppet::Type.type(:mscs_resource).provide(:mscs_resource) do
   def create
  
      cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
-     Mscs::Group.add(cluster_handle,@resource[:clustergroup])
+     #Mscs::Group.add(cluster_handle,@resource[:clustergroup])
      Mscs::Resource.add(cluster_handle,@resource[:name],@resource[:resourcetype],@resource[:clustergroup])
 ipres={
         :enabledhcp    => 0,
@@ -34,8 +33,6 @@ ipres={
   def exists?
     cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
     resourcequery=Mscs::Cluster.enumerate('Cluster', cluster_handle, 4)
-    p @resource[:name]
-    p resourcequery
     resourcequery.include? @resource[:name]
   end
 
