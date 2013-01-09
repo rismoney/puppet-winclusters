@@ -2,9 +2,33 @@ puppet-winclusters
 ==================
 
 puppet windows cluster module
-NOTE THIS IS NON-FUNCTIONAL
 
-Initial notes:
+Not an official release but:
+Updated Status!  Resource and Group Creation work
+
+```
+
+  mscs_group {'mygroup':
+    clustername => 'clustername',
+    ensure   => present,
+  }
+  
+  mscs_resource {'myip':
+    clustername => 'clustername',
+    resourcetype => 'ipaddress',
+    clustergroup => 'mygroup',
+    ipaddress => '30.3.4.42',
+    subnetmask => '255.255.255.0',
+    network => 'NICNAME',
+    ensure   => present,
+    require  => Mscs_group['booya'],
+  }
+
+```
+
+
+Random thoughts:
+
 * facter facts needed:
    (1) determine cluster service state 
    (2) determine if virtual cluster name exists
