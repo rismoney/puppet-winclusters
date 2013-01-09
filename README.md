@@ -17,7 +17,7 @@ Updated Status!  Resource and Group Creation work
     clustername => 'clustername',
     resourcetype => 'ipaddress',
     clustergroup => 'mygroup',
-    ipaddress => '30.3.4.42',
+    ipaddress => '1.2.3.4',
     subnetmask => '255.255.255.0',
     network => 'NICNAME',
     ensure   => present,
