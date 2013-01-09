@@ -21,7 +21,7 @@ Updated Status!  Resource and Group Creation work
     subnetmask => '255.255.255.0',
     network => 'NICNAME',
     ensure   => present,
-    require  => Mscs_group['booya'],
+    require  => Mscs_group['mygroup'],
   }
 
 ```
