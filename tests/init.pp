@@ -2,10 +2,10 @@
     clustername => 'cx-fs01',
     resourcetype => 'ipaddress',
     clustergroup => 'booya',
-    ipaddress => '30.3.4.43',
+    ipaddress => '30.3.4.42',
     subnetmask => '255.255.255.0',
     network => 'C_MGMT-304',
-    ensure   => present,
+    ensure   => absent,
   }
 
 # the logic for the following should perform the following
