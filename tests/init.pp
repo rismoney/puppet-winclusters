@@ -1,3 +1,8 @@
+  mscs_group {'booya':
+    clustername => 'cx-fs01',
+    ensure   => present,
+  }
+  
   mscs_resource {'myresourcex':
     clustername => 'cx-fs01',
     resourcetype => 'ipaddress',
@@ -5,7 +10,8 @@
     ipaddress => '30.3.4.42',
     subnetmask => '255.255.255.0',
     network => 'C_MGMT-304',
-    ensure   => absent,
+    ensure   => present,
+    require  => Mscs_group['booya'],
   }
 
 # the logic for the following should perform the following
