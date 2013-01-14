@@ -7,17 +7,28 @@ Not an official release but:
 Updated Status!  Resource and Group Creation work
 
 ```
+  mscs_cluster {'cluster.my.domain.com':
+    nodenames => 'server1',
+    ipaddresses => '1.2.3.4',
+    subnetmasks => '255.255.255.0',
+  }
+
+  mscs_node {'server1':
+    clustername => 'cluster.my.domain.com',
+    require  => Mscs_cluster['cluster.my.domain.com'],
+  }
 
   mscs_group {'mygroup':
     clustername => 'clustername',
     ensure   => present,
+    require  => Mscs_cluster['cluster.my.domain.com']
   }
   
   mscs_resource {'myip':
     clustername => 'clustername',
     resourcetype => 'ipaddress',
     clustergroup => 'mygroup',
-    ipaddress => '1.2.3.4',
+    ipaddress => '1.2.3.5',
     subnetmask => '255.255.255.0',
     network => 'NICNAME',
     ensure   => present,
