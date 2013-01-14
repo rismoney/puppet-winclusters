@@ -1,13 +1,25 @@
-  mscs_group {'booya':
-    clustername => 'cx-fs01',
-    ensure   => present,
+  mscs_cluster {'cc-git01a.office.iseoptions.com':
+    nodenames => 'cc-git01',
+    ipaddresses => '30.3.4.43',
+    subnetmasks => '255.255.255.0',
   }
-  
+
+  mscs_node {'cc-git01':
+    clustername => 'cc-git01a',
+    require  => Mscs_node['cc-git01a.office.iseoptions.com'],
+  }
+
+  mscs_group {['booya','kasha']:
+    clustername => 'cc-git01a',
+    ensure   => present,
+    require  => Mscs_node['cc-git01']
+  }
+
   mscs_resource {'myresourcex':
-    clustername => 'cx-fs01',
+    clustername => 'cc-git01a',
     resourcetype => 'ipaddress',
     clustergroup => 'booya',
-    ipaddress => '30.3.4.42',
+    ipaddress => '30.3.4.44',
     subnetmask => '255.255.255.0',
     network => 'C_MGMT-304',
     ensure   => present,
@@ -37,6 +49,3 @@
 #mscs_resource will not create a group
 #mscs_resource will only manage puppet supported priv properties (additional can only be added through code upgrades)
 #valid values for resourcetype are checking at type level and will validate attribs accordingly
-
-
-
