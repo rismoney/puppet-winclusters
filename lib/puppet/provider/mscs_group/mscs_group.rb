@@ -16,11 +16,12 @@ Puppet::Type.type(:mscs_group).provide(:mscs_group) do
   end
 
   def exists?
-    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername]) 
-    groupquery=Mscs::Cluster.enumerate('Cluster', cluster_handle, 8)
-    groupquery.include? @resource[:name]
+    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
+    if cluster_handle == 0
+      return false
+    else
+      groupquery=Mscs::Cluster.enumerate('Cluster', cluster_handle, 8)
+      groupquery.include? @resource[:name]
+    end
   end
-
 end
-
-
