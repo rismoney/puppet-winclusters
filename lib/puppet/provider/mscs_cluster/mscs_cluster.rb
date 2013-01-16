@@ -8,22 +8,27 @@ Puppet::Type.type(:mscs_cluster).provide(:mscs_cluster) do
   def create
     cluster_config={
       :ClusterName     => @resource[:name],
-      :NodeNames       => @resource[:nodenames],
-      :IPAddresses     => @resource[:ipaddresses],
-      :SubnetMasks     => @resource[:subnetmasks],
+      :NodeNames       => @resource[:nodenames].to_a,
+      :IPAddresses     => @resource[:ipaddresses].to_a,
+      :SubnetMasks     => @resource[:subnetmasks].to_a,
       }
-    Mscs::Cluster.create(server, cluster_config)
+      
+    kerb_name="nyise\\#{@resource[:nodenames].to_a.first}"
+    Mscs::Cluster.create(@resource[:nodenames].first, cluster_config,kerb_name)
   end
 
   def destroy
-    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
+    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:name])
     removal=Mscs::Cluster.destroy(cluster_handle,@resource[:name])
   end
 
   def exists?
-    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
-    clusterquery=Mscs::Cluster.enumerate('Cluster', cluster_handle, 1)
-    clusterquery.include? @resource[:nodenames]
+    #we use the server name here, and not the virtual name,
+    #because it may not be available yet...
+    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:nodenames].first)
+    cluster_handle == 0 ? (return false) : (return true)
+    #clusterquery=Mscs::Cluster.enumerate('Cluster', cluster_handle, 1)
+    #clusterquery.include? @resource[:nodenames]
   end
 
 end
