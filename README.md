@@ -1,10 +1,20 @@
 puppet-winclusters
 ==================
 
+** Member of the rismoney suite of Windows Puppet Providers **
+
 puppet windows cluster module
 
-Not an official release but:
-Updated Status!  Resource and Group Creation work
+Project Status:
+This is currently being refactored.  All commits prior to this
+point are based on a ruby gem I wrote to handle win32ole and wmi
+calls.  This will be re-tooled to work on Win2008 and Win2012
+with the cluster and powershell commands respectively.
+
+This new work effort will occur in a branch called:
+poshcli
+
+Thank you and please stay tuned for future updates
 
 ```
   mscs_cluster {'cluster.my.domain.com':
