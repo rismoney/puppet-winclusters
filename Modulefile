@@ -1,5 +1,5 @@
 name    'puppet-winclusters'
-version '0.1.0'
+version '0.2.0'
 source  'https://github.com/rismoney/puppet-winclusters'
 author  'rismoney@gmail.com'
 license 'Apache License 2.0'
