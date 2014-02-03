@@ -5,22 +5,34 @@ require 'C:/gitrepos/ruby-mscs/lib/mscs.rb'
 Puppet::Type.type(:mscs_resource).provide(:mscs_resource) do
   desc "Resource Provider for MSCS clusters." 
   
+  def config_ip
+      $resource_config={
+        :enabledhcp    => 0,
+        :address       => @resource[:ipaddress],
+        :subnetmask    => @resource[:subnetmask],
+        :network       => @resource[:network],
+        :enablenetbios => 0
+      }
+  end
+  
+  def config_name
+      $resource_config={
+        :name          => @resource[:name],
+      }
+  end
   
   def create
  
     cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
-    #Mscs::Group.add(cluster_handle,@resource[:clustergroup])
     Mscs::Resource.add(cluster_handle,@resource[:name],@resource[:resourcetype],@resource[:clustergroup])
-    ipres={
-      :enabledhcp    => 0,
-      :address       => @resource[:ipaddress],
-      :subnetmask    => @resource[:subnetmask],
-      :network       => @resource[:network],
-      :enablenetbios => 0
-      }
+    case @resource[:resourcetype]
+    when "ipaddress"
+          config_ip
+    when "networkname"
+          config_name
+    end #case
 
-
-    Mscs::Resource.set_priv(cluster_handle, @resource[:name], ipres)
+    Mscs::Resource.set_priv(cluster_handle, @resource[:name], $resource_config)
 
   end
 
