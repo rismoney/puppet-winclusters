@@ -39,6 +39,9 @@ describe Puppet::Type.type(:mscs_resource) do
   'skipchkdsk',
   'interactwithDesktop',
   'usenetworkname',
+  'requirekerberos',
+  'requiredns',
+  'publishptrrecords',
   ].each do |param|
     context "when a valid cluster parameter #{param} => requiring boolean is specified  #{param}" do
       validbools = [
