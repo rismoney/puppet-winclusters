@@ -1,10 +1,24 @@
 puppet-winclusters
 ==================
 
+** Member of the rismoney suite of Windows Puppet Providers **
+
 puppet windows cluster module
 
-Not an official release but:
-Updated Status!  Resource and Group Creation work
+Project Status:
+This is currently being refactored.  All commits prior to this
+point are based on a ruby gem I wrote to handle win32 api
+calls.  This will be re-tooled to work on Win2008 and Win2012
+with exclusive wmi calls.  
+
+This new work effort will occur in a branch called:
+wmi
+
+Another approach is available in poshcli branch but
+that might be ported to a future DSC based cluster configurator
+
+
+Thank you and please stay tuned for future updates
 
 ```
   mscs_cluster {'cluster.my.domain.com':
@@ -42,18 +56,8 @@ Random thoughts:
 
 * facter facts needed:
    (1) determine cluster service state 
-   (2) determine if virtual cluster name exists
+   (2) detail cluster disks
 
-* idempotency approach
-  
-  * only deploy cluster module to intended hosts
-  * if intended host has no cluster svc
-       install dism features
-  * if intended host has cluster cluster svc disabled
-       run install cluster if no existing cluster exists
-       run join existing cluster if existing cluster exists
-  * if cluster all ready configured
-       install cluster resources 
 
   developing [ruby-mscs gem] (https://github.com/rismoney/ruby-mscs) in tandem : 
   work in progress...
