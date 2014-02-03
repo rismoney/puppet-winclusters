@@ -1,26 +1,31 @@
-require 'C:/gitrepos/ruby-mscs/lib/mscs.rb'
-
-# fetch the mscs_type call the class provide passing it mscs_resource 
-
 Puppet::Type.type(:mscs_node).provide(:mscs_node) do
   desc "Group Provider for MSCS clusters." 
 
-  def create
-     cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
-     Mscs::Node.add(cluster_handle,@resource[:name])
+  commands :poshexec =>
+  if File.exists?("#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe")
+    "#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe"
+  elsif File.exists?("#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe")
+    "#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe"
+  else
+    'powershell.exe'
   end
 
+  def create
+    args = "#{@@connstr};get-cluster \"#{@resource[:clustername]}\| Add-ClusterNode -Name \"#{@resource[:name]}\""
+    poshexec(args)
+  end 
+
   def destroy
-    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
-    removal=Mscs::Node.remove(cluster_handle,@resource[:name])
+    args = "#{@@connstr};Remove-ClusterNode -Cluster \"#{@resource[:clustername]}\" -Name \"#{@resource[:name]}\" -Force"
+    poshexec(args)
   end
 
   def exists?
-    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername]) 
-    nodequery=Mscs::Cluster.enumerate('Cluster', cluster_handle, 1)
-    nodequery.include? @resource[:name]
+    rc=false
+    args = "#{@@connstr};(Get-ClusterNode -Cluster \"#{@resource[:clustername]}\" -Name \"#{@resource[:name]}\" 2> $null).name"
+    clusternode = poshexec(args).chomp
+    rc = true if clusternode == @resource[:name].to_s
+    return rc
   end
 
 end
-
-
