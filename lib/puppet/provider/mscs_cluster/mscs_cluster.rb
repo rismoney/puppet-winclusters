@@ -1,34 +1,36 @@
-require 'C:/gitrepos/ruby-mscs/lib/mscs.rb'
-
-# fetch the mscs_type call the class provide passing it mscs_resource 
-
 Puppet::Type.type(:mscs_cluster).provide(:mscs_cluster) do
   desc "Cluster Provider for MSCS clusters." 
 
+  commands :poshexec =>
+    if File.exists?("#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe")
+      "#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe"
+    elsif File.exists?("#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe")
+      "#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe"
+    else
+      'powershell.exe'
+    end
+
+  @@connstr= "import-module failoverclusters | out-null"
+
   def create
-    cluster_config={
-      :ClusterName     => @resource[:name],
-      :NodeNames       => @resource[:nodenames].to_a,
-      :IPAddresses     => @resource[:ipaddresses].to_a,
-      :SubnetMasks     => @resource[:subnetmasks].to_a,
-      }
-      
-    kerb_name="nyise\\#{@resource[:nodenames].to_a.first}"
-    Mscs::Cluster.create(@resource[:nodenames].first, cluster_config,kerb_name)
-  end
+    args = "#{@@connstr};New-Cluster -Name \"#{@resource[:name]}\" -Node \"#{@resource[:nodenames].to_a.first}\" -StaticAddress \"#{@resource[:ipaddress].to_a.first}\""
+    poshexec(args)
+    # TODO set additional IPs and SubnetMasks
+    end
 
   def destroy
-    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:name])
-    removal=Mscs::Cluster.destroy(cluster_handle,@resource[:name])
+    args = "#{@@connstr};Get-Cluster \"#{@resource[:name]}\" | Remove-Cluster"
+    poshexec(args)
+    # TODO force parameter needed - this isn't going to work
   end
 
   def exists?
-    #we use the server name here, and not the virtual name,
-    #because it may not be available yet...
-    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:nodenames].first)
-    cluster_handle == 0 ? (return false) : (return true)
-    #clusterquery=Mscs::Cluster.enumerate('Cluster', cluster_handle, 1)
-    #clusterquery.include? @resource[:nodenames]
+    rc = false
+    clusternodes = []
+    args = "#{@@connstr};(Get-ClusterNode -Cluster \"#{@resource[:name]}\") 2> $null | foreach { $_.Name }"
+    clusternodes=poshexec(args).chomp
+    rc = true if clusternodes.include?(@resource[:nodenames].to_a.first)
+    return rc
   end
 
 end
