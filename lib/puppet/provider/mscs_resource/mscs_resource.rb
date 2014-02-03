@@ -1,51 +1,62 @@
-require 'C:/gitrepos/ruby-mscs/lib/mscs.rb'
-
-# fetch the mscs_type call the class provide passing it mscs_resource 
-
 Puppet::Type.type(:mscs_resource).provide(:mscs_resource) do
   desc "Resource Provider for MSCS clusters." 
-  
+
+  commands :poshexec =>
+    if File.exists?("#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe")
+      "#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe"
+    elsif File.exists?("#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe")
+      "#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe"
+    else
+      'powershell.exe'
+    end
+
+  @@connstr= "import-module failoverclusters | out-null"
+
   def config_ip
-      $resource_config={
-        :enabledhcp    => 0,
-        :address       => @resource[:ipaddress],
-        :subnetmask    => @resource[:subnetmask],
-        :network       => @resource[:network],
-        :enablenetbios => 0
-      }
+    args = "#{@@connstr};" +
+      "$Resource = Add-ClusterResource -Name \"#{@resource[:name]}\" -ResourceType \"IP Address\" -Group \"#{@resource[:clustergroup]}\";" +
+      "$IPAddress = New-Object -TypeName Microsoft.FailoverClusters.PowerShell.ClusterParameter -ArgumentList $Resource,Address,\"#{@resource[:ipaddress]}\";" +
+      "$SubnetMask = New-Object -TypeName Microsoft.FailoverClusters.PowerShell.ClusterParameter -ArgumentList $Resource,SubnetMask,\"#{@resource[:subnetmask]}\";" +
+      "$IPAddress,$SubnetMask | Set-ClusterParameter"
+    poshexec(args)
   end
-  
+
   def config_name
-      $resource_config={
-        :name          => @resource[:name],
-      }
+    args = "#{@@connstr};" +
+      "$resource = Add-ClusterResource \"#{@resource[:name]}\" -ResourceType \"Network Name\" -Group \"#{@resource[:clustergroup]}\";"+
+      "$DNSName = New-Object -TypeName Microsoft.FailoverClusters.PowerShell.ClusterParameter -ArgumentList $Resource,DNSNAME,\"#{@resource[:name]}\";" +
+      "$NetName = New-Object Microsoft.FailoverClusters.PowerShell.ClusterParameter $Resource,Address,\"#{@resource[:name]}\";" +
+      "$DNSName,$NetName | Set-ClusterParameter"
+    poshexec(args)
   end
-  
+
+  def set_private
+  # TODO
+  end
+
   def create
- 
-    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
-    Mscs::Resource.add(cluster_handle,@resource[:name],@resource[:resourcetype],@resource[:clustergroup])
+    args = "#{@@connstr};Add-ClusterResource -Cluster \"#{@resource[:clustername]}\ -Name \"#{@resource[:name]}\" -ResourceType \"#{@resource[:resourcetype]}\" -Group \"#{@resource[:clustergroup]}\""
+    poshexec(args)
+
     case @resource[:resourcetype]
     when "ipaddress"
           config_ip
     when "networkname"
           config_name
     end #case
-
-    Mscs::Resource.set_priv(cluster_handle, @resource[:name], $resource_config)
-
+ 
   end
 
   def destroy
-    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
-    removal=Mscs::Resource.remove(cluster_handle,@resource[:name])
-    
+    args = "#{@@connstr};Remove-ClusterResource -Cluster \"#{@resource[:clustername]}\" -Name \"#{@resource[:name]}\" -force"
+    poshexec(args)
   end
 
   def exists?
-    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
-    resourcequery=Mscs::Cluster.enumerate('Cluster', cluster_handle, 4)
-    resourcequery.include? @resource[:name]
+    rc=false
+    args = "#{@@connstr};(Get-ClusterResource -Cluster \"#{@resource[:clustername]}\" -Name \"#{@resource[:name]}\" 2> $null).name"
+    clusterresource = poshexec(args).chomp
+    rc = true if clusterresource == @resource[:name].to_s
+    return rc
   end
-
 end
