@@ -16,7 +16,7 @@
     require  => Mscs_cluster['cc-git01x']
   }
 
-  mscs_resource {'myresourcex':
+  mscs_resource {'myresourcey':
     clustername => 'cc-git01x',
     resourcetype => 'ipaddress',
     clustergroup => 'booya',
@@ -26,3 +26,12 @@
     ensure   => present,
     require  => Mscs_group['booya'],
   }
+  
+  mscs_resource {'networkname':
+    clustername => 'cc-git01x',
+    resourcetype => 'networkname',
+    clustergroup => 'booya',
+    ensure   => present,
+    require  => Mscs_resource['myresourcey'],
+  }
+  
