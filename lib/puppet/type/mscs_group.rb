@@ -15,14 +15,12 @@ Puppet::Type.newtype(:mscs_group) do
 
   end
 
-  
+
   newparam(:clustername, :parent => Puppet::MscsProperty) do
     desc "The name of the cluster"
   end
 
   validate do
-
     raise Puppet::Error, "You must specify clustername"  if self[:clustername].nil?
-
   end
 end
