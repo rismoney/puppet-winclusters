@@ -18,10 +18,10 @@ Puppet::Type.type(:mscs_group).provide(:mscs_group) do
   def exists?
     cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
     if cluster_handle == 0
-      return false
+      raise Puppet::Error, "Cannot make connection to cluster" 
     else
       groupquery=Mscs::Cluster.enumerate('Cluster', cluster_handle, 8)
       groupquery.include? @resource[:name]
     end
   end
-end
+end  
