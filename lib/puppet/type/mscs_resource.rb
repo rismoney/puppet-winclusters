@@ -48,7 +48,7 @@ Puppet::Type.newtype(:mscs_resource) do
   end
   
   newparam(:enablenetbios, :parent => Puppet::MscsProperty) do
-    "The default gateway to be be assigned to ip address resource"
+    "Enable or disable netbios ip address resource"
     defaultto :true
   end
   
@@ -65,10 +65,40 @@ Puppet::Type.newtype(:mscs_resource) do
     defaultto :true
   end
 
+  newparam(:publishptrrecords, :parent => Puppet::MscsProperty) do
+    desc "The network name to be be assigned to network name resource"
+    newvalues(:true, :false)
+    aliasvalue(:yes, :true)
+    aliasvalue(:y, :true)
+    aliasvalue(:n, :false)
+    aliasvalue(:no, :false)
+    defaultto :true
+  end
+  
+  newparam(:requiredns, :parent => Puppet::MscsProperty) do
+    desc "The network name to be be assigned to network name resource"
+    newvalues(:true, :false)
+    aliasvalue(:yes, :true)
+    aliasvalue(:y, :true)
+    aliasvalue(:n, :false)
+    aliasvalue(:no, :false)
+    defaultto :true
+  end
+  
+  newparam(:requirekerberos, :parent => Puppet::MscsProperty) do
+    desc "network name kerberos required"
+    newvalues(:true, :false)
+    aliasvalue(:yes, :true)
+    aliasvalue(:y, :true)
+    aliasvalue(:n, :false)
+    aliasvalue(:no, :false)
+    defaultto :true
+  end
+  
   #file share params
 
   newparam(:path, :parent => Puppet::MscsProperty) do
-    desc "The network name to be be assigned to file share resource"
+    desc "The path to be be assigned to file share resource"
      validate do |value|
       raise Puppet::Error.new('Must be specified using an absolute path.') unless absolute_path?(value)
       raise Puppet::Error, "Invalid value for attribute '#{name}', must use back slashes instead of forward slashes" if self.should_to_s(value).include?('/')
@@ -81,6 +111,11 @@ Puppet::Type.newtype(:mscs_resource) do
   end
 
 
+  newparam(:maxusers, :parent => Puppet::MscsProperty) do
+    desc "The max number of users to connect to a share"
+  end
+
+  
   newparam(:remark, :parent => Puppet::MscsProperty) do
     desc "The remark to be be assigned to file share resource"
   end
@@ -186,7 +221,6 @@ Puppet::Type.newtype(:mscs_resource) do
     raise Puppet::Error, "You must specify command line for a Generic Application Resource"  if is_genapp != has_commandline
     raise Puppet::Error, "You must specify currentdir for a Generic Application Resource"  if is_genapp != has_currentdirectory
     raise Puppet::Error, "You must specify Signature for an Physical Disk Resource"  if is_pd != has_signature
-
 
   end
 end
