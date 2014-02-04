@@ -22,7 +22,7 @@ Puppet::Type.newtype(:mscs_cluster) do
     end
   end
 
-  newparam(:ipaddresses, :array_matching => :all) do
+  newparam(:ipaddress, :array_matching => :all) do
     desc "The group on the cluster"
     validate do |value|
       raise Puppet::Error, "Name must not be empty" if value.empty?
@@ -35,7 +35,5 @@ Puppet::Type.newtype(:mscs_cluster) do
       raise Puppet::Error, "Name must not be empty" if value.empty?
     end
   end
-
-
 end
 
