@@ -1,12 +1,15 @@
-require 'C:/gitrepos/ruby-mscs/lib/mscs.rb'
-
-# fetch the mscs_type call the class provide passing it mscs_resource 
+require 'D:\gitrepo\ruby-mscs\lib\mscs.rb'
 
 Puppet::Type.type(:mscs_resource).provide(:mscs_resource) do
-  desc "Resource Provider for MSCS clusters." 
-  
+  desc "Resource Provider for MSCS clusters."
+
+  def init
+    clustername = resource[:clustername]
+    Mscs::Cluster.initialize clustername
+  end
+
   def config_ip
-      $resource_config={
+      {
         :enabledhcp    => 0,
         :address       => @resource[:ipaddress],
         :subnetmask    => @resource[:subnetmask],
@@ -14,38 +17,63 @@ Puppet::Type.type(:mscs_resource).provide(:mscs_resource) do
         :enablenetbios => 0
       }
   end
-  
+
   def config_name
-      $resource_config={
+      {
         :name          => @resource[:name],
       }
   end
-  
-  def create
- 
-    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
-    Mscs::Resource.add(cluster_handle,@resource[:name],@resource[:resourcetype],@resource[:clustergroup])
-    case @resource[:resourcetype]
-    when "ipaddress"
-          config_ip
-    when "networkname"
-          config_name
-    end #case
 
-    Mscs::Resource.set_priv(cluster_handle, @resource[:name], $resource_config)
+  def config_generic_service
+      {
+        :startupparameters    => @resource[:startupparameters]
+      }
+  end
+
+  def config_fileshare
+      {
+        :path           => @resource[:path],
+        :sharename      => @resource[:sharename],
+        :maxusers       => @resource[:maxusers],
+        :remark         => @resource[:remark],
+        :sharedubdirs   => @resource[:sharesubdirs],
+      }
+  end
+  
+  def config_disk
+      {
+        :diskid             => @resource[:diskid],
+        :skipchkdsk         => @resource[:skipchkdsk],
+        :conditionalmount   => @resource[:conditionalmount],
+      }
+  end
+
+  def create
+
+    Mscs::Resource.add(@resource[:name],@resource[:resourcetype],@resource[:clustergroup])
+    case @resource[:resourcetype]
+      when "ipaddress"
+        resource_config = config_ip
+      when "networkname"
+        resource_config = config_name
+      when "genericservice"
+        resource_config = config_generic_service
+      when "physicaldisk"
+        resource_config = config_disk
+    end
+
+    Mscs::Resource.set_priv(@resource[:name], resource_config)
 
   end
 
   def destroy
-    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
-    removal=Mscs::Resource.remove(cluster_handle,@resource[:name])
-    
+     Mscs::Resource.delete(@resource[:name])
   end
 
   def exists?
-    cluster_handle=Mscs::Cluster.open('Cluster',@resource[:clustername])
-    resourcequery=Mscs::Cluster.enumerate('Cluster', cluster_handle, 4)
-    resourcequery.include? @resource[:name]
+    init
+    resourcelist=Mscs::Resource.query
+    resourcelist.include?(@resource[:name])
   end
-
+  
 end

@@ -120,7 +120,7 @@ Puppet::Type.newtype(:mscs_resource) do
     desc "The remark to be be assigned to file share resource"
   end
 
-  newparam(:sharedubdirs, :parent => Puppet::MscsProperty) do
+  newparam(:sharedsubdirs, :parent => Puppet::MscsProperty) do
     desc "Share subdirectory for file share resource? [y/n]"
     newvalues(:true, :false)
     aliasvalue(:yes, :true)
@@ -143,8 +143,8 @@ Puppet::Type.newtype(:mscs_resource) do
 
   # physical disk parameters
   
-  newparam(:signature, :parent => Puppet::MscsProperty) do
-    desc "The disk signature to be be assigned to physical disk resource"
+  newparam(:diskid, :parent => Puppet::MscsProperty) do
+    desc "The disk id to be be assigned to physical disk resource"
   end
   
   newparam(:skipchkdsk, :parent => Puppet::MscsProperty) do
@@ -208,7 +208,7 @@ Puppet::Type.newtype(:mscs_resource) do
     has_address = !self[:ipaddress].nil?
     has_subnetmask = !self[:subnetmask].nil?
     has_path = !self[:path].nil?
-    has_signature = !self[:signature].nil?
+    has_diskid = !self[:diskid].nil?
 
     has_currentdirectory = !self[:currentdirectory].nil?
     has_sharename = !self[:sharename].nil?
@@ -220,7 +220,7 @@ Puppet::Type.newtype(:mscs_resource) do
     raise Puppet::Error, "You must specify Sharename for an File Share Resource"  if is_fs != has_sharename
     raise Puppet::Error, "You must specify command line for a Generic Application Resource"  if is_genapp != has_commandline
     raise Puppet::Error, "You must specify currentdir for a Generic Application Resource"  if is_genapp != has_currentdirectory
-    raise Puppet::Error, "You must specify Signature for an Physical Disk Resource"  if is_pd != has_signature
+    raise Puppet::Error, "You must specify Signature for an Physical Disk Resource"  if is_pd != has_diskid
 
   end
 end
